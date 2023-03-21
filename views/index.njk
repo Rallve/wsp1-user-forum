@@ -1,0 +1,11 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <h1 class="mainTitle RGB">Wassup</h1>
+    {% for row in rows %}
+    <div class="post">
+      <h1 class="postTitle">{{ row.title }}</h1>
+      {{ row.content }}
+    </div>
+    {% endfor %}
+{% endblock %}
