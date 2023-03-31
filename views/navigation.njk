@@ -1,0 +1,17 @@
+<nav class="navbar">
+    <div class="navbar__inner container">
+        <a href="/" class="logo">Logo</a>
+        <button class="navbar__button" aria-label="Open menu">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24"><path d="M3 18v-2h18v2Zm0-5v-2h18v2Zm0-5V6h18v2Z"/></svg>
+        </button>
+        <div class="navbar__collapse">
+            <ul class="menu">
+                {% for item in nav %}
+                    <li>
+                        <a class="navText" href="{{ item.url }}">{{ item.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -8,7 +8,10 @@
     <title>Test</title>
 </head>
 <body>
-    {% block content %}
-    {% endblock %}
+    {% include "navigation.njk" %}
+    <main class="main">
+        {% block content %}
+        {% endblock %}
+    </main>
 </body>
 </html>

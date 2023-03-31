@@ -8,6 +8,16 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
 });
 const promisePool = pool.promise();
+const nav = [
+    {
+        url: "/",
+        title: "Home"
+    },
+    {
+        url: "/new",
+        title: "Create Post"
+    },
+];
 
 /* GET home page. */
 /*
@@ -20,7 +30,7 @@ router.get('/', async function (req, res, next) {
     res.render('index.njk', {
         rows: rows,
         title: 'Forum',
-        //nav: nav
+        nav: nav
     });
 });
 
