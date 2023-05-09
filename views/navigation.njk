@@ -6,11 +6,18 @@
         </button>
         <div class="navbar__collapse">
             <ul class="menu">
-                {% for item in nav %}
-                    <li>
-                        <a class="navText" href="{{ item.url }}">{{ item.title }}</a>
-                    </li>
-                {% endfor %}
+                <li>
+                    <a class="navText" href="/">Home</a>
+                </li>
+                <li>
+                    <a class="navText" href="/new">Create post</a>
+                </li>
+                <li>
+                    <a class="navText" href="/register">Register</a>
+                </li>
+                <li>
+                    <a class="navText" href="/login">Login</a>
+                </li>
             </ul>
         </div>
     </div>

@@ -4,31 +4,16 @@ const router = express.Router();
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const { post } = require('../app.js');
+/*
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     database: process.env.DB_DATABASE,
     password: process.env.DB_PASSWORD,
 });
+*/
+const pool = require('../utils/database.js');
 const promisePool = pool.promise();
-const nav = [
-    {
-        url: "/",
-        title: "Home"
-    },
-    {
-        url: "/new",
-        title: "Create Post"
-    },
-    {
-        url: "/register",
-        title: "Register"
-    },
-    {
-        url: "/login",
-        title: "Login"
-    }
-];
 
 /* GET home page. */
 /*
@@ -41,12 +26,8 @@ router.get('/', async function (req, res, next) {
     res.render('index.njk', {
         rows: rows,
         title: 'Forum',
-        nav: nav
+        session: req.session.LoggedIn
     });
-});
-
-router.get('/login', function (req, res, next) {
-    res.render('login.njk', { title: 'Login' });
 });
 
 router.get('/profile', async function (req, res, next) {
@@ -69,6 +50,30 @@ router.get('/profile', async function (req, res, next) {
 
 });
 
+router.get('/new', async function (req, res, next) {
+    const [users] = await promisePool.query('SELECT * FROM lgl23users');
+    console.log(users)
+    res.render('new.njk', {
+        title: 'Nytt inlägg',
+        users,
+    });
+});
+
+
+router.post('/new', async function (req, res, next) {
+    const { author, title, content } = req.body;
+    const errors = [];
+    
+
+    const [rows] = await promisePool.query('INSERT INTO lgl23forum (authorId, title, content) VALUES (?, ?, ?)', [1, title, content]);
+    res.redirect('/');
+});
+
+
+router.get('/login', function (req, res, next) {
+    res.render('login.njk', { title: 'Login' }); 
+});
+
 router.post('/login', async function (req, res, next) {
     const { username, password } = req.body;
     const errors = [];
@@ -83,16 +88,35 @@ router.post('/login', async function (req, res, next) {
         errors.push("Password is Required")
         return res.json(errors)
     }
+
+    
+    if (response.errors.length === 0) {
+        // sanitize title och body, tvätta datan
+        const sanitize = (str) => {
+            let temp = str.trim();
+            temp = validator.stripLow(temp);
+            temp = validator.escape(temp);
+            return temp;
+        };
+        if (title) sanitizedTitle = sanitize(title);
+        if (body) sanitizedBody = sanitize(body);
+    }
+
     const [users] = await promisePool.query("SELECT * FROM lgl23users WHERE name=?", username);
-    //console.log(users)
+    console.log(users)
     if (users.length > 0) {
 
         bcrypt.compare(password, users[0].password, function (err, result) {
             // result == true logga in, annars buuuu 
             if (result) {
-                //console.log(users[0].id)
+                console.log(users[0].id)
                 req.session.userId = username;
                 req.session.LoggedIn = true;
+                nav.splice(2,3);
+                nav.push({
+                    url: "/profile",
+                    title: "Profile"
+                })
                 return res.redirect('/profile');
             } else {
                 errors.push("Invalid username or password")
@@ -104,6 +128,35 @@ router.post('/login', async function (req, res, next) {
         return res.json(errors)
     }
     // if username inte är i db : login fail!
+});
+
+router.post('/delete', async function(req, res, next) {
+    if(req.session.LoggedIn) {
+        req.session.LoggedIn = false;
+        await promisePool.query('DELETE FROM lgl23users WHERE name=?', req.session.userId);
+        res.redirect('/');
+    } else {
+        return res.status(401).send("Access denied");
+    }
+});
+
+router.post('/logout', async function(req, res, next) {
+    console.log(req.session.LoggedIn);
+    if(req.session.LoggedIn) {
+    req.session.LoggedIn = false;
+    delete nav[2];
+    nav.push(    {
+        url: "/register",
+        title: "Register"
+    },
+    {
+        url: "/login",
+        title: "Login"
+    })
+    res.redirect('/');
+    } else {
+        return res.status(401).send("Access denied");
+    }
 });
 
 router.get('/register', async function(req, res) {
@@ -146,6 +199,17 @@ router.post('/register', async function(req, res) {
     });
 });
 
+router.get('/crypt/:pwd', async function (req, res, next) {
+    const pwd = req.params.pwd;
+
+    await bcrypt.hash(pwd, 10, function (err, hash) {
+
+        console.log(hash);
+        //return res.json(hash);
+        return res.json({ hash });
+    });
+
+});
 
 module.exports = router;
 
