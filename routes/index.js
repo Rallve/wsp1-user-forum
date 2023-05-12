@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 const { post } = require('../app.js');
 /*
 const pool = mysql.createPool({
@@ -63,10 +64,28 @@ router.get('/new', async function (req, res, next) {
 router.post('/new', async function (req, res, next) {
     const { author, title, content } = req.body;
     const errors = [];
-    
 
-    const [rows] = await promisePool.query('INSERT INTO lgl23forum (authorId, title, content) VALUES (?, ?, ?)', [1, title, content]);
+    if (!title) errors.push('Title is required');
+    if (!content) errors.push('Body is required');
+    if (title && title.length <= 3) errors.push('Title must be at least 3 characters');
+    if (content && content.length <= 10) errors.push('Body must be at least 10 characters');
+
+    if (errors.length === 0) {
+        // sanitize title och body, tvätta datan
+        const sanitize = (str) => {
+            let temp = str.trim();
+            temp = validator.stripLow(temp);
+            temp = validator.escape(temp);
+            return temp;
+        };
+        if (title) sanitizedTitle = sanitize(title);
+        if (content) sanitizedBody = sanitize(content);
+
+        const [rows] = await promisePool.query('INSERT INTO lgl23forum (authorId, title, content) VALUES (?, ?, ?)', [1, title, content]);
     res.redirect('/');
+    } else {
+        
+    }
 });
 
 
@@ -90,7 +109,7 @@ router.post('/login', async function (req, res, next) {
     }
 
     
-    if (response.errors.length === 0) {
+    if (errors.length === 0) {
         // sanitize title och body, tvätta datan
         const sanitize = (str) => {
             let temp = str.trim();
@@ -98,8 +117,8 @@ router.post('/login', async function (req, res, next) {
             temp = validator.escape(temp);
             return temp;
         };
-        if (title) sanitizedTitle = sanitize(title);
-        if (body) sanitizedBody = sanitize(body);
+        if (username) sanitizedUser = sanitize(username);
+        if (password) sanitizedPass = sanitize(password);
     }
 
     const [users] = await promisePool.query("SELECT * FROM lgl23users WHERE name=?", username);
