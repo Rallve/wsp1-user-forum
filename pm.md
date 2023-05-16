@@ -18,6 +18,8 @@ Det som var positivt var att det var ganska lätt att kopiera koden. Trots att m
 
 Det fanns inte riktigt något som var svårt. Det mesta som var svårt var att skapa de två delar som kombinerades i denna uppgift, men de är två andra uppgifter.
 
+Det svåraste med den här uppgiften var att komma ihåg att skriva i loggboken...
+
 ## Sannnnanfatning
 
 I överlag skulle jag säga att min sida är helt okej. Den fungerar helt enkelt. Dock finns det massor av grejer som kan förbättras eller läggas till. Några grejer som jag skulle vilja lägga till är att kunna kommentera på posts eller kunna likea posts. Man kan dessutom inte ta bort posts just nu vilket känns som en funktion som borde existera. Skulle även vilja göra så att nya posts visas längst upp på sidan istället för längst ner. Vissa av dessa och flera andra förbättringar känns som att de antagligen inte skulle ta så lång tid att implementera, men problemet just nu är att jag inte har så mycket tid alls, särskilt pga en massa andra restuppgifter, så tyvärr måste jag nöja mig med detta.
