@@ -45,7 +45,7 @@ router.get('/new', async function (req, res, next) {
 
 
 router.post('/new', async function (req, res, next) {
-    const { author, title, content } = req.body;
+    const { title, content } = req.body;
     const errors = [];
 
     if (!title) errors.push('Title is required');
